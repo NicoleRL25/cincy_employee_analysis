@@ -8,7 +8,11 @@ Created on Sun Nov  1 10:52:07 2020
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import ticker as mtick
+from bokeh.io import output_file, show
+from bokeh.plotting import figure
+
 from datetime import datetime
+
 
 
 today=datetime.today()
@@ -21,72 +25,31 @@ cols=['Employee_Name','EmpID','Salary','Position','State','Zip','DOB','Sex'
       ,'EngagementSurvey','EmpSatisfaction','SpecialProjectsCount'
       ,'LastPerformanceReview_Date','DaysLateLast30','Absences']
 
-emps=pd.read_csv('..\data\input\hr_dataset_v14.csv',usecols=cols
-                 ,dtype={'EmpID':'str','Zip':'str','Sex':'category'
-                         ,'MaritalDesc':'category','CitizenDesc':'category'
-                         ,'RaceDesc':'category','Department':'category'}
-                 ,parse_dates=['DOB','DateofHire','DateofTermination'
-                               ,'LastPerformanceReview_Date'])
+emps=pd.read_csv('..\data\input\cincinnati_employees.csv'
+                 ,dtype={'SEX':'category','RACE':'category'
+                         ,'DEPTNAME':'category','DEPTID':'str'
+                         ,'POSITION_NBR':'str','JOBCODE':'str','GRADE':'str'}
+                 ,parse_dates=['JOB_ENTRY_DT','HIRE_DATE'])
 
-
-#replaces M and F with Male and Female
-emps['Sex']=(emps.Sex.str.strip().str.replace(r'F\b','Female',regex=True)
-.str.replace(r'M\b','Male',regex=True))
-
-
-emps['HispanicLatino']=emps.HispanicLatino.str.title()
-
-active_emps=emps.loc[emps.EmploymentStatus=='Active'].copy()
-
-active_emps['tenure']=(active_emps.DateofHire
-           .apply(lambda x: today.year - x.year
-           -((today.month,today.day)<(x.month,x.year))))
-
-
-emps_by_department_race_gender=(active_emps
-                                .pivot_table(index=['Department','RaceDesc']
-                                ,columns='Sex',values='EmpID',aggfunc='count'))
+emps.columns=emps.columns.str.lower()
 
 
 
-fig1,ax1=plt.subplots(figsize=(5,7))
 
+#change M and F to male and female
+emps['sex']=emps.sex.apply(lambda x: 'Male' if x=='M' else 'Female')
 
-active_emps.Department.value_counts().plot.pie(radius=1
-                                   ,autopct=lambda p: f'{p:.1f}%'
-                                   ,labels=None
-                                   ,cmap='tab20c'
-                                   ,wedgeprops={'width':.2}
-                                   ,title='Employees by Department'
-                                   ,ax=ax1)
+#
 
 
 
-ax1.legend(bbox_to_anchor=(1.1,1)
-,labels=active_emps.Department.value_counts().index)
 
 
 
-fig2,ax2=plt.subplots(figsize=(5,7))
-(active_emps.Sex.value_counts(normalize=True)
-.plot.bar(cmap='tab20c',title='Employee Gender',ax=ax2))
-
-ax2.set_xticklabels(ax2.get_xticklabels(),rotation='horizontal')
-ax2.yaxis.set_major_formatter(mtick.PercentFormatter(1))
 
 
 
-fig3,ax3=plt.subplots()
-active_emps.tenure.plot.hist(ax=ax3,title='Employee Tenure')
-ax3.set_xlabel('Tenure (in Years)')
-fig3.text(1,.5,'The average tenure is '
-          +str(int(active_emps.tenure.mean()))+ ' years')
 
-
-fig4,ax4=plt.subplots(figsize=(6,7))
-(active_emps.RaceDesc.value_counts(normalize=True)
-.plot.pie(radius=1.1,autopct='%.1f%%',cmap='twilight',ax=ax4
-          ,labels=None,wedgeprops={'width':.3}))
 
 
 
