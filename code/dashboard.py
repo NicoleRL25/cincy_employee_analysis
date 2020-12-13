@@ -26,21 +26,32 @@ today=datetime.today()
 
 
 emps=pd.read_csv('..\data\input\cincinnati_employees.csv'
-                 ,dtype={'SEX':'category'
-                         ,'RACE':'category'
+                 ,dtype={'SEX':'category' ,'RACE':'category'
                          ,'DEPTNAME':'category','DEPTID':'str'
                          ,'POSITION_NBR':'str','JOBCODE':'str','GRADE':'str'}
                  ,parse_dates=['JOB_ENTRY_DT','HIRE_DATE'])
 
+
+
+#changes column names to lower case
+emps.columns=emps.columns.str.lower()
 
 #create an ordered category type for age groups
 cat_type = CategoricalDtype(categories=['UNDER 18','18-25','26-30','31-40'
                                         ,'41-50', '51-60', '61-70', 'OVER 70']
                             ,ordered=True)
 
-emps['AGE_RANGE']=emps.AGE_RANGE.astype(cat_type)
+emps['age_range']=emps.age_range.astype(cat_type)
 
-emps.columns=emps.columns.str.lower()
+#creates a dictionary to map eeo job codes 
+
+eeo_dict={1:'Officials and Administrators',2:'Professionals',3:'Technicians'
+          ,4:'Protective Service Workers',5:'Protective Service Workers'
+          ,6:'Administrative Support',7:'Skilled Craft Workers'
+          ,8:'Service-Maintenance'}
+
+#maps the eeo codes to the text category
+emps['eeo_job_class']=emps.eeo_job_group.map(eeo_dict).fillna('Uncategorized')
 
 #change M and F to male and female
 emps['sex']=emps.sex.apply(lambda x: 'Male' if x=='M' else 'Female')
@@ -53,9 +64,17 @@ emps['race']=emps['race'].str.replace('Chinese','Asian/Pacific Islander')
 emps['race']=emps['race'].str.replace('Torres Strait Islander Origin'
                                       ,'Aboriginal/Torres Strait Island')
 
+#add a column for full time / part-time
+emps['full_time']=emps.fte.apply(lambda x: 'Full-Time' 
+                                       if x == 1 else 'Part-Time')
+
 #calculate employee tenure and time in job in years
 emps['tenure']=round((datetime.today()-emps.hire_date)/np.timedelta64(1,'Y'),2)
 
+
+#convert salary to float
+emps['annual_rt']=emps.annual_rt.str.replace(',','')
+emps['annual_rt']=emps.annual_rt.astype('float')
 
 
 #plot of the age distribution
@@ -97,19 +116,61 @@ sns.histplot(emps.tenure,kde=True,ax=ax4)
 ax4.set_title('Tenure Distribution')
 
 #tenure by gender
-female_tenure=emps.loc[emps.sex=='Female','tenure'].copy()
-male_tenure=emps.loc[emps.sex=='Male','tenure'].copy()
+tenure_by_gender=emps.pivot_table(values='tenure',columns='sex'
+                                  ,index=emps.index)
 
 fig5,axes=plt.subplots(2,1,sharex=True)
-sns.histplot(female_tenure,kde=True,ax=axes[0])
+sns.histplot(tenure_by_gender['Female'],kde=True,ax=axes[0])
 axes[0].set_title('Tenure for Female Employees')
-sns.histplot(male_tenure,kde=True,ax=axes[1])
+sns.histplot(tenure_by_gender['Male'],kde=True,ax=axes[1])
 axes[1].set_title('Tenure for Male Employees')
+axes[1].set_xlabel('Tenure')
+
+
+#plot of salary distribution
+fig6,ax6=plt.subplots()
+sns.histplot(emps.annual_rt,kde=True,ax=ax6)
+ax6.set_title('Salary Distribution')
+ax6.set_xlabel('Salary')
+
+
+#plot of full-time vs part-time employees
+fig7,ax7=plt.subplots()
+emps.full_time.value_counts(normalize=True).plot.pie(radius=1.3
+                                                     ,ax=ax7
+                                                     ,wedgeprops={'width':.3}
+                                                     ,labeldistance=None
+                                                     ,cmap='summer')
+ax7.set_title('Full_Time vs Part-Time',pad=20)
+ax7.set_ylabel('')
+ax7.legend(bbox_to_anchor=(1.25,.65))
 
 
 
 
+job_class_by_gender=emps.pivot_table(index='eeo_job_class',values='name'
+                                     , columns='sex',aggfunc='count')
+                                     
 
+job_class_by_gender_pct=job_class_by_gender.div(job_class_by_gender.sum(axis=1)
+                                                ,axis=0)
+
+fig8,ax8=plt.subplots(figsize=(9,7))
+job_class_by_gender_pct.plot.barh(stacked=True,cmap='tab20c',ax=ax8
+                                  ,title='Gender by Job Category')
+ax8.xaxis.set_major_formatter(mtick.PercentFormatter(1))
+ax8.legend(bbox_to_anchor=(1.1,1))
+
+
+
+
+#create plots and widgets
+
+
+#add callbacks
+
+
+#arrange plots and widgets in layouts
 
 
 
