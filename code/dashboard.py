@@ -6,14 +6,14 @@ Created on Sun Nov  1 10:52:07 2020
 """
 
 import numpy as np
+import statsmodels.api as sm
 
 import pandas as pd
 from pandas.api.types import CategoricalDtype
 import matplotlib.pyplot as plt
 from matplotlib import ticker as mtick
 import seaborn as sns
-from bokeh.io import output_file, show
-from bokeh.plotting import figure
+
 
 from datetime import datetime
 
@@ -23,8 +23,6 @@ today=datetime.today()
 
 
 #read csv containing cincinnati employee data into a pandas dataframe
-
-
 emps=pd.read_csv('..\data\input\cincinnati_employees.csv'
                  ,dtype={'SEX':'category' ,'RACE':'category'
                          ,'DEPTNAME':'category','DEPTID':'str'
@@ -41,17 +39,25 @@ cat_type = CategoricalDtype(categories=['UNDER 18','18-25','26-30','31-40'
                                         ,'41-50', '51-60', '61-70', 'OVER 70']
                             ,ordered=True)
 
+#casts the age_range as a categorical data type
 emps['age_range']=emps.age_range.astype(cat_type)
 
-#creates a dictionary to map eeo job codes 
-
+#creates a dictionary to map eeo job codes to category names
 eeo_dict={1:'Officials and Administrators',2:'Professionals',3:'Technicians'
           ,4:'Protective Service Workers',5:'Protective Service Workers'
           ,6:'Administrative Support',7:'Skilled Craft Workers'
           ,8:'Service-Maintenance'}
 
+
 #maps the eeo codes to the text category
 emps['eeo_job_class']=emps.eeo_job_group.map(eeo_dict).fillna('Uncategorized')
+
+#creates a dictionary to map paygroups to a descriptive label
+paygroup_dict={'GEN':'General','MGM':'Management','POL':'Police',
+               'FIR':'Fire Department','CCL':'City Council'}
+
+#maps the paygroup to a label
+emps['paygroup_label']=emps.paygroup.map(paygroup_dict).fillna('Uncategorized')
 
 #change M and F to male and female
 emps['sex']=emps.sex.apply(lambda x: 'Male' if x=='M' else 'Female')
@@ -64,7 +70,7 @@ emps['race']=emps['race'].str.replace('Chinese','Asian/Pacific Islander')
 emps['race']=emps['race'].str.replace('Torres Strait Islander Origin'
                                       ,'Aboriginal/Torres Strait Island')
 
-#add a column for full time / part-time
+#add a column for full time / part-time based on FTE column
 emps['full_time']=emps.fte.apply(lambda x: 'Full-Time' 
                                        if x == 1 else 'Part-Time')
 
@@ -77,9 +83,19 @@ emps['annual_rt']=emps.annual_rt.str.replace(',','')
 emps['annual_rt']=emps.annual_rt.astype('float')
 
 
+
+emps_by_paygroup=emps.paygroup_label.value_counts(normalize=True)
+
+fig,ax=plt.subplots()
+emps_by_paygroup.plot.pie(ax=ax,title='Employees by Pay Group',
+                          cmap='twilight_shifted',radius=1,autopct='%1.1f%%',
+                          wedgeprops={'width':0.3})
+
+
 #plot of the age distribution
 fig,ax=plt.subplots()
-emps.age_range.value_counts(sort=False).plot.bar(ax=ax,title='')
+emps.age_range.value_counts(sort=False).plot.bar(ax=ax,
+                                                 title='Age Distribution')
 ax.set_xticklabels(labels=ax.get_xticklabels(),rotation='horizontal')
 
 
@@ -93,10 +109,14 @@ ax1.yaxis.set_major_formatter(mtick.PercentFormatter(1))
 #plot of racial demographics
 fig2,ax2=plt.subplots()
 emps.race.value_counts().plot.pie(cmap='twilight_shifted',ax=ax2
-                                  ,radius=1.5,wedgeprops={'width':.5}
+                                  ,radius=1,wedgeprops={'width':.3}
                                   ,labeldistance=None
-                                  ,title='Racial Demographics')
+                                  ,title='Racial Demographics'
+                                  ,autopct='%1.1f%%'
+                                  ,pctdistance=1.2)
 ax2.legend(bbox_to_anchor=(1.2,.75))
+
+
 
 
 #review of job titles
@@ -164,13 +184,7 @@ ax8.legend(bbox_to_anchor=(1.1,1))
 
 
 
-#create plots and widgets
 
-
-#add callbacks
-
-
-#arrange plots and widgets in layouts
 
 
 
