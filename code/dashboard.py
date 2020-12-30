@@ -21,6 +21,8 @@ from datetime import datetime
 
 today=datetime.today()
 
+#To-Do: Fix Racial Demographic Pie Chart
+
 
 #read csv containing cincinnati employee data into a pandas dataframe
 emps=pd.read_csv('..\data\input\cincinnati_employees.csv'
@@ -62,8 +64,9 @@ emps['paygroup_label']=emps.paygroup.map(paygroup_dict).fillna('Uncategorized')
 #change M and F to male and female
 emps['sex']=emps.sex.apply(lambda x: 'Male' if x=='M' else 'Female')
 
-#consolidated race groups by assigning Chinese to the Asian/Pacific Islander
-#assigned Torres Strait Islander Origin to Aboriginal/Torres Strait Island
+#consolidated race groups by assigning Chinese to the Asian/Pacific Islander 
+#group and assigned Torres Strait Islander Origin to Aboriginal/Torres Strait 
+#Island
 #Formatted text to title case
 emps['race']=emps.race.str.title()
 emps['race']=emps['race'].str.replace('Chinese','Asian/Pacific Islander')
@@ -84,67 +87,94 @@ emps['annual_rt']=emps.annual_rt.astype('float')
 
 
 
+#####Data Visualization
+
+
+#what is the composition of the workforce?
 emps_by_paygroup=emps.paygroup_label.value_counts(normalize=True)
 
-fig,ax=plt.subplots()
+fig,ax=plt.subplots(figsize=(5,8))
 emps_by_paygroup.plot.pie(ax=ax,title='Employees by Pay Group',
-                          cmap='twilight_shifted',radius=1,autopct='%1.1f%%',
-                          wedgeprops={'width':0.3})
+                          cmap='twilight_shifted',radius=1.1,
+                          autopct='%1.1f%%',
+                          wedgeprops={'width':0.3},
+                          startangle=45)
+ax.set_ylabel(None)
+
+#Employees in the General Pay Group make up approx. 48% of the workforce
+#The 10 roles below account for roughly 50% of the employees in that group
+#The majority are Parks/Recreation Program Leaders
+fig1,ax1=plt.subplots()
+(emps.loc[emps.paygroup_label=='General','business_title']
+ .value_counts()[:10].sort_values()
+ .plot.barh(ax=ax1,title='Top 10 General Job Titles',
+            color='silver'))
+ax1.patches[9].set_color('darkorange')
 
 
+#The majority of employees are between 41 and 60 years of age
 #plot of the age distribution
-fig,ax=plt.subplots()
+fig2,ax2=plt.subplots()
 emps.age_range.value_counts(sort=False).plot.bar(ax=ax,
                                                  title='Age Distribution')
-ax.set_xticklabels(labels=ax.get_xticklabels(),rotation='horizontal')
+ax2.set_xticklabels(labels=ax2.get_xticklabels(),rotation='horizontal')
 
-
+#The workforce is roughly 60% male
 #plot of employee gender distribution
-fig1,ax1=plt.subplots()
-emps.sex.value_counts(normalize=True).plot.bar(ax=ax1,title='Employee Gender')
-ax1.set_xticklabels(labels=ax1.get_xticklabels(),rotation='horizontal')
-ax1.yaxis.set_major_formatter(mtick.PercentFormatter(1))
+fig3,ax3=plt.subplots()
+emps.sex.value_counts(normalize=True).plot.bar(ax=ax3,title='Employee Gender'
+                                               ,rot=0)
+ax3.yaxis.set_major_formatter(mtick.PercentFormatter(1))
+
+
+#When looking at a breakdown of job category by gender, we see that there
+#is an underrepresentation of women as Technicians, Skilled Craft Workers and 
+#Protective Service Workers (Police and Firefighters)
+job_class_by_gender=emps.pivot_table(index='eeo_job_class',values='name'
+                                     , columns='sex',aggfunc='count')
+                                     
+
+job_class_by_gender_pct=job_class_by_gender.div(job_class_by_gender.sum(axis=1)
+                                                ,axis=0)
+
+fig8,ax8=plt.subplots(figsize=(9,7))
+job_class_by_gender_pct.plot.barh(stacked=True,cmap='tab20c',ax=ax8
+                                  ,title='Gender by Job Category')
+ax8.xaxis.set_major_formatter(mtick.PercentFormatter(1))
+ax8.legend(bbox_to_anchor=(1.1,1))
 
 
 #plot of racial demographics
-fig2,ax2=plt.subplots()
-emps.race.value_counts().plot.pie(cmap='twilight_shifted',ax=ax2
-                                  ,radius=1,wedgeprops={'width':.3}
+fig4,ax4=plt.subplots(figsize=(8,6))
+emps.race.value_counts().plot.pie(cmap='tab20c',ax=ax4
+                                  ,radius=1.5,wedgeprops={'width':.5}
                                   ,labeldistance=None
-                                  ,title='Racial Demographics'
                                   ,autopct='%1.1f%%'
                                   ,pctdistance=1.2)
-ax2.legend(bbox_to_anchor=(1.2,.75))
+ax4.legend(bbox_to_anchor=(1.2,.75))
+fig4.suptitle('Racial Demographics')
+
+job_class_by_race=emps.pivot_table(index='eeo_job_class',values='name'
+                                     , columns='race',aggfunc='count')
 
 
+race_col_list=list(emps.race.value_counts().index)                                     
 
+job_class_by_race_pct=job_class_by_race.div(job_class_by_race.sum(axis=1)
+                                                ,axis=0)
 
-#review of job titles
-number_of_job_titles=len(emps.jobtitle.value_counts().index)
-emp_count=emps.jobtitle.value_counts().sum()
-
-fig3,ax3=plt.subplots()
-(emps.jobtitle.value_counts()[:15]
- .plot.barh(ax=ax3,title='Top 15 Jobs by Count'))
-fig3.text(1,.5,'There are '+str(number_of_job_titles)+ ' job titles\n'
-          + 'Filled by '+str(emp_count)+' employees')
+job_class_by_race_pct=job_class_by_race_pct.reindex(columns=race_col_list)
+fig9,ax9=plt.subplots(figsize=(9,7))
+job_class_by_race_pct.plot.barh(stacked=True,cmap='tab20c',ax=ax9
+                                  ,title='Gender by Job Category')
+ax9.xaxis.set_major_formatter(mtick.PercentFormatter(1))
+ax9.legend(bbox_to_anchor=(1.1,1))
 
 
 #plots tenure
-fig4,ax4=plt.subplots()
+fig5,ax5=plt.subplots(3,1)
 sns.histplot(emps.tenure,kde=True,ax=ax4)
-ax4.set_title('Tenure Distribution')
-
-#tenure by gender
-tenure_by_gender=emps.pivot_table(values='tenure',columns='sex'
-                                  ,index=emps.index)
-
-fig5,axes=plt.subplots(2,1,sharex=True)
-sns.histplot(tenure_by_gender['Female'],kde=True,ax=axes[0])
-axes[0].set_title('Tenure for Female Employees')
-sns.histplot(tenure_by_gender['Male'],kde=True,ax=axes[1])
-axes[1].set_title('Tenure for Male Employees')
-axes[1].set_xlabel('Tenure')
+ax5.set_title('Tenure Distribution')
 
 
 #plot of salary distribution
@@ -152,7 +182,6 @@ fig6,ax6=plt.subplots()
 sns.histplot(emps.annual_rt,kde=True,ax=ax6)
 ax6.set_title('Salary Distribution')
 ax6.set_xlabel('Salary')
-
 
 #plot of full-time vs part-time employees
 fig7,ax7=plt.subplots()
@@ -168,18 +197,7 @@ ax7.legend(bbox_to_anchor=(1.25,.65))
 
 
 
-job_class_by_gender=emps.pivot_table(index='eeo_job_class',values='name'
-                                     , columns='sex',aggfunc='count')
-                                     
 
-job_class_by_gender_pct=job_class_by_gender.div(job_class_by_gender.sum(axis=1)
-                                                ,axis=0)
-
-fig8,ax8=plt.subplots(figsize=(9,7))
-job_class_by_gender_pct.plot.barh(stacked=True,cmap='tab20c',ax=ax8
-                                  ,title='Gender by Job Category')
-ax8.xaxis.set_major_formatter(mtick.PercentFormatter(1))
-ax8.legend(bbox_to_anchor=(1.1,1))
 
 
 
