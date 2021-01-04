@@ -12,6 +12,7 @@ import pandas as pd
 from pandas.api.types import CategoricalDtype
 import matplotlib.pyplot as plt
 from matplotlib import ticker as mtick
+from matplotlib.gridspec import GridSpec
 import seaborn as sns
 
 
@@ -87,56 +88,148 @@ emps['annual_rt']=emps.annual_rt.astype('float')
 
 
 
-#####Data Visualization#####
+#####Employee Snapshot Data Visualization#####
+
+fig = plt.figure(figsize=(11,8),constrained_layout=True)
+fig.suptitle('City of Cincinnati Employee Snapshot')
+gs=GridSpec(3,3,figure=fig)
+
+#axis for headcount text
+ax1=fig.add_subplot(gs[0,0])
+
+#axis for full vs part-time
+ax2=fig.add_subplot(gs[0,1])
+
+#axis for emps by job category
+ax3=fig.add_subplot(gs[:3,-1])
+
+#axis for age distribution
+ax4=fig.add_subplot(gs[2,:-1])
+
+#race
+ax5=fig.add_subplot(gs[1,0])
+
+#gender
+ax6=fig.add_subplot(gs[1,1])
 
 
-#what is the composition of the workforce?
-emps_by_paygroup=emps.paygroup_label.value_counts(normalize=True)
+#text plot displaying total employee count
 
-fig,ax=plt.subplots(figsize=(5,8))
-emps_by_paygroup.plot.pie(ax=ax,title='Employees by Pay Group',
-                          cmap='twilight_shifted',radius=1.1,
-                          autopct='%1.1f%%',
-                          wedgeprops={'width':0.3},
-                          startangle=45)
-ax.set_ylabel(None)
+image=plt.imread('cincinnati_logo.png')
+ax1.imshow(image)
+
+#removes spines from headcount axis
+for spine in ax1.spines.keys():
+    ax1.spines[spine].set_visible(False)
+    
+
+ax1.set_xticks([])
+ax1.set_yticks([])
+
+
+#plot of full-time vs part-time employees
+emps.full_time.value_counts(normalize=True).plot.pie(radius=1,
+                                                     ax=ax2,
+                                                     wedgeprops={'width':.3},
+                                                     labels=['FT','PT'],
+                                                    # labeldistance=1.25,
+                                                     cmap='tab20c')
+                                                     
+ax2.set_ylabel('')
+ax2.text(0,0.1,'Total\nHeadcount: \n'+str(len(emps)),
+                                           horizontalalignment='center',
+                                           verticalalignment='center')
+
+
+
+#plot of the workforce composition by eeo job category
+emps_by_jobclass=emps.eeo_job_class.value_counts(normalize=True).sort_values()
+
+emps_by_jobclass.plot.barh(ax=ax3,title='Employees by Job Class',
+                          color='silver')
+
+
+#to wrap tick labels use the get_text method of the label text to pass the text
+#to a list while replacing spaces with the \n for new line
+#pass the new list to set the tick labels
+wrapped_labels=[label.get_text().replace(' ','\n').replace('-','\n') 
+                for label in ax3.get_yticklabels()]    
+    
+ax3.set_yticklabels(wrapped_labels)
+ax3.patches[-1].set_color('darkorange')
+ax3.xaxis.set_major_formatter(mtick.PercentFormatter(1))
+
+
+emps.age_range.value_counts(sort=False).plot.bar(ax=ax4,
+                                                 title='Age Distribution',
+                                                 rot=0)
+
+
+emps_by_race=emps.race.value_counts().sort_values()
+emps_by_race.index=['Aboriginal+','American Indian+','Unknown','Hispanic+',
+                    'Asian+','Black','White']
+emps_by_race.plot.barh(width=.05,ax=ax5,title='Racial Demographics')
+wrapped_labels=[label.get_text().replace('//','\n') 
+                for label in ax5.get_yticklabels()]
+
+ax5.plot(emps_by_race.values, emps_by_race.index,
+         marker='o', linestyle='',alpha=0.8, color="orange")
+
+ax5.set_yticklabels(wrapped_labels)
+
+
+
+
+emps.sex.value_counts(normalize=True).plot.pie(ax=ax6,title='Employee Gender',
+                                               autopct='%1.0f%%',rot=0,
+                                               wedgeprops={'width':.3})
+ax6.yaxis.set_major_formatter(mtick.PercentFormatter(1))
+ax6.set_ylabel(None)
+
+
+fig.savefig('..\docs\employee_snapshot.pdf')
+
+
+         
 
 #are women and men equally represented at the management level?
 #28% of female and 19% of male employees are in management positions
 count_women=emps.sex.value_counts()['Female']
 count_men=emps.sex.value_counts()['Male']
-female_managers=emps.loc[(emps.paygroup_label=='Management')
-                         &(emps.sex=='Female'),'name'].count()
-male_managers=emps.loc[(emps.paygroup_label=='Management')
-                         &(emps.sex=='Male'),'name'].count()
+female_mgrs=(emps.loc[emps.eeo_job_class=='Officials and Administrators']
+                        .sex.value_counts()['Female'])
+male_mgrs=(emps.loc[emps.eeo_job_class=='Officials and Administrators']
+                         .sex.value_counts()['Male'])
 
 
-successes=np.array([female_managers,male_managers])
+successes=np.array([female_mgrs,male_mgrs])
 samples=np.array([count_women,count_men])
 
 p_value=sm.stats.proportions_ztest(successes,samples,alternative='larger')[1]
 
 if p_value<0.05:
     print('We reject the null hypothesis that women and men are represented'
-          'equally at the management level')
+          ' equally at the management level')
 else:
     print('We fail to reject the null hypothesis that women are in management '
-          'at a rate lower than men')
+          'at a rate equal to men')
 
 #does this hypotheis hold when we exclude part-time employees?
-fte_by_paygroup=(emps.loc[emps.full_time=='Full-Time']
-                 .pivot_table(index='paygroup_label',columns='sex',
+fte_by_job_class=(emps.loc[emps.full_time=='Full-Time']
+                 .pivot_table(index='eeo_job_class',columns='sex',
                               values='name',aggfunc='count',margins=True))
 
 
-count_women_full_time=fte_by_paygroup.loc[('All','Female')]
+count_women_full_time=fte_by_job_class.loc[('All','Female')]
 
 
-full_time_female_mgrs=fte_by_paygroup.loc[('Management','Female')]
+full_time_female_mgrs=fte_by_job_class.loc[('Officials and Administrators'
+                                           ,'Female')]
 
-count_men_full_time=fte_by_paygroup.loc[('All','Male')]
+count_men_full_time=fte_by_job_class.loc[('All','Male')]
 
-full_time_male_mgrs=fte_by_paygroup.loc[('Management','Male')]
+full_time_male_mgrs=fte_by_job_class.loc[('Officials and Administrators'
+                                          ,'Male')]
 
 successes=np.array([full_time_female_mgrs,full_time_male_mgrs])
 
@@ -144,39 +237,30 @@ samples=np.array([count_women_full_time,count_men_full_time])
 
 p_value=sm.stats.proportions_ztest(successes,samples,alternative='larger')[1]
 
+print(sm.stats.proportions_ztest(successes,samples,alternative='larger')[0])
+
+
+
+
 if p_value<0.05:
     print('We reject the null hypothesis that women and men are represented'
-          'equally at the management level')
+          ' equally at the management level')
 else:
     print('We fail to reject the null hypothesis that women '
-          'are in management levels at a rate lower than men')
+          ' are in management levels at a rate equal to men')
 
 
-#Employees in the General Pay Group make up approx. 48% of the workforce
-#The 10 roles below account for roughly 50% of the employees in that group
-#The majority are Parks/Recreation Program Leaders
+#Police Officers and Parks/Recreation Program Leaders are the largest job 
+#roles. Followed by Fire Fighters
 fig1,ax1=plt.subplots()
-(emps.loc[emps.paygroup_label=='General','business_title']
- .value_counts()[:10].sort_values()
- .plot.barh(ax=ax1,title='Top 10 General Job Titles',
+(emps.business_title.value_counts()[:10].sort_values()
+ .plot.barh(ax=ax1,title='Top 10 Job Titles',
             color='silver'))
-ax1.patches[9].set_color('darkorange')
+ax1.patches[9].set_color('blue')
+ax1.patches[8].set_color('green')
+ax1.patches[7].set_color('red')
 
 
-#The majority of employees are between 41 and 60 years of age
-#plot of the age distribution
-fig2,ax2=plt.subplots()
-emps.age_range.value_counts(sort=False).plot.bar(ax=ax2,
-                                                 title='Age Distribution',
-                                                 rot=0)
-
-
-#The workforce is roughly 60% male
-#plot of employee gender distribution
-fig3,ax3=plt.subplots()
-emps.sex.value_counts(normalize=True).plot.bar(ax=ax3,title='Employee Gender'
-                                               ,rot=0)
-ax3.yaxis.set_major_formatter(mtick.PercentFormatter(1))
 
 
 #When looking at a breakdown of job category by gender, we see that there
@@ -198,15 +282,7 @@ ax4.legend(bbox_to_anchor=(1.1,1))
 ax4.axvline(x=.5, color='red')
 
 
-#plot of racial demographics
-fig5,ax5=plt.subplots(figsize=(8,6))
-emps.race.value_counts().plot.pie(cmap='tab20c',ax=ax5
-                                  ,radius=1.5,wedgeprops={'width':.5}
-                                  ,labeldistance=None
-                                  ,autopct='%1.1f%%'
-                                  ,pctdistance=1.2)
-ax5.legend(bbox_to_anchor=(1.2,.75))
-fig5.suptitle('Racial Demographics')
+
 
 job_class_by_race=emps.pivot_table(index='eeo_job_class',values='name'
                                      , columns='race',aggfunc='count')
@@ -237,16 +313,7 @@ sns.histplot(emps.annual_rt,kde=True,ax=ax8)
 ax8.set_title('Salary Distribution')
 ax8.set_xlabel('Salary')
 
-#plot of full-time vs part-time employees
-fig9,ax9=plt.subplots()
-emps.full_time.value_counts(normalize=True).plot.pie(radius=1.3
-                                                     ,ax=ax9
-                                                     ,wedgeprops={'width':.3}
-                                                     ,labeldistance=None
-                                                     ,cmap='summer')
-ax9.set_title('Full_Time vs Part-Time',pad=20)
-ax9.set_ylabel('')
-ax9.legend(bbox_to_anchor=(1.25,.65))
+
 
 
 
