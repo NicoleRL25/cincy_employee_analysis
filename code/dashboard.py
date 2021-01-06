@@ -190,22 +190,66 @@ ax6.set_ylabel(None)
 fig.savefig('..\docs\employee_snapshot.pdf')
 
 
-         
+#When looking at a breakdown of job category by gender, we see that there
+#is an underrepresentation of women as Technicians, Skilled Craft Workers and 
+#Protective Service Workers (Police and Firefighters)
+#and an overrepresentation in administrative support
+job_class_by_gender=emps.pivot_table(index='eeo_job_class',values='name',
+                                     columns='sex',aggfunc='count')
+                                     
+
+job_class_by_gender_pct=job_class_by_gender.div(job_class_by_gender
+                                                .sum(axis=1), axis=0)
+
+fig1,ax1=plt.subplots(figsize=(9,7))
+job_class_by_gender_pct.plot.barh(stacked=True,cmap='tab20c',ax=ax1
+                                  ,title='Gender by Job Category')
+ax1.xaxis.set_major_formatter(mtick.PercentFormatter(1))
+ax1.legend(bbox_to_anchor=(1.1,1))
+ax1.axvline(x=.5, color='red')
+
+
+#gets the total of employees in non-leadership roles
+emps_non_official=(job_class_by_gender.loc[['Administrative Support',
+                                            'Professionals',
+                                            'Protective Service Workers',
+                                            'Service-Maintenance',
+                                            'Skilled Craft Workers',
+                                            'Technicians',
+                                            'Uncategorized']].copy().sum())
+
+emps_officials=job_class_by_gender.loc['Officials and Administrators'].copy()
+
+leadership_by_gender=(pd.concat([emps_non_official,emps_officials],axis=1)
+                      .rename(columns={0:'Non-Leadership',
+                                       'Officials and Administrators':
+                                           'Leadership'}))
+
+leadership_by_gender_pct=(leadership_by_gender
+                          .div(leadership_by_gender.sum()).unstack()
+                          .reset_index().rename(columns={'level_0':'Org Level',
+                                                 0:'Percent'}))
+
+fig2,ax2=plt.subplots()
+sns.pointplot(x='Org Level',y='Percent',hue='sex',
+              data=leadership_by_gender_pct,ax=ax2,
+              palette=sns.color_palette(['tab:orange','tab:blue']))
+    
+ax2.set_title('Leadership Representation: Gender')       
+
+ax2.yaxis.set_major_formatter(mtick.PercentFormatter(1))  
+
 
 #are women and men equally represented at the management level?
-#28% of female and 19% of male employees are in management positions
-count_women=emps.sex.value_counts()['Female']
-count_men=emps.sex.value_counts()['Male']
-female_mgrs=(emps.loc[emps.eeo_job_class=='Officials and Administrators']
-                        .sex.value_counts()['Female'])
-male_mgrs=(emps.loc[emps.eeo_job_class=='Officials and Administrators']
-                         .sex.value_counts()['Male'])
+#while we do see a decrease in the nunber of women from the general workforce
+#to the Leadership level, the difference isn't statistically significant
+#but there is room for improvement
+#using a hypothesis test we see that our p-value is greater than 0.05
+#so we fail to reject the null hypothesis
 
-
-successes=np.array([female_mgrs,male_mgrs])
-samples=np.array([count_women,count_men])
-
-p_value=sm.stats.proportions_ztest(successes,samples,alternative='larger')[1]
+t_stat,p_value=sm.stats.proportions_ztest(leadership_by_gender.Leadership,
+                                   leadership_by_gender.sum(axis=1),
+                                   alternative='two-sided')
 
 if p_value<0.05:
     print('We reject the null hypothesis that women and men are represented'
@@ -213,76 +257,6 @@ if p_value<0.05:
 else:
     print('We fail to reject the null hypothesis that women are in management '
           'at a rate equal to men')
-
-#does this hypotheis hold when we exclude part-time employees?
-fte_by_job_class=(emps.loc[emps.full_time=='Full-Time']
-                 .pivot_table(index='eeo_job_class',columns='sex',
-                              values='name',aggfunc='count',margins=True))
-
-
-count_women_full_time=fte_by_job_class.loc[('All','Female')]
-
-
-full_time_female_mgrs=fte_by_job_class.loc[('Officials and Administrators'
-                                           ,'Female')]
-
-count_men_full_time=fte_by_job_class.loc[('All','Male')]
-
-full_time_male_mgrs=fte_by_job_class.loc[('Officials and Administrators'
-                                          ,'Male')]
-
-successes=np.array([full_time_female_mgrs,full_time_male_mgrs])
-
-samples=np.array([count_women_full_time,count_men_full_time])
-
-p_value=sm.stats.proportions_ztest(successes,samples,alternative='larger')[1]
-
-print(sm.stats.proportions_ztest(successes,samples,alternative='larger')[0])
-
-
-
-
-if p_value<0.05:
-    print('We reject the null hypothesis that women and men are represented'
-          ' equally at the management level')
-else:
-    print('We fail to reject the null hypothesis that women '
-          ' are in management levels at a rate equal to men')
-
-
-#Police Officers and Parks/Recreation Program Leaders are the largest job 
-#roles. Followed by Fire Fighters
-fig1,ax1=plt.subplots()
-(emps.business_title.value_counts()[:10].sort_values()
- .plot.barh(ax=ax1,title='Top 10 Job Titles',
-            color='silver'))
-ax1.patches[9].set_color('blue')
-ax1.patches[8].set_color('green')
-ax1.patches[7].set_color('red')
-
-
-
-
-#When looking at a breakdown of job category by gender, we see that there
-#is an underrepresentation of women as Technicians, Skilled Craft Workers and 
-#Protective Service Workers (Police and Firefighters)
-#and an overrepresentation in administrative support
-job_class_by_gender=emps.pivot_table(index='eeo_job_class',values='name'
-                                     , columns='sex',aggfunc='count')
-                                     
-
-job_class_by_gender_pct=job_class_by_gender.div(job_class_by_gender.sum(axis=1)
-                                                ,axis=0)
-
-fig4,ax4=plt.subplots(figsize=(9,7))
-job_class_by_gender_pct.plot.barh(stacked=True,cmap='tab20c',ax=ax4
-                                  ,title='Gender by Job Category')
-ax4.xaxis.set_major_formatter(mtick.PercentFormatter(1))
-ax4.legend(bbox_to_anchor=(1.1,1))
-ax4.axvline(x=.5, color='red')
-
-
-
 
 job_class_by_race=emps.pivot_table(index='eeo_job_class',values='name'
                                      , columns='race',aggfunc='count')
@@ -299,6 +273,26 @@ job_class_by_race_pct.plot.barh(stacked=True,cmap='tab20c',ax=ax6
                                   ,title='Race by Job Category')
 ax6.xaxis.set_major_formatter(mtick.PercentFormatter(1))
 ax6.legend(bbox_to_anchor=(1.1,1))
+
+
+
+
+#Police Officers and Parks/Recreation Program Leaders are the largest job 
+#roles. Followed by Fire Fighters
+fig1,ax1=plt.subplots()
+(emps.business_title.value_counts()[:10].sort_values()
+ .plot.barh(ax=ax1,title='Top 10 Job Titles',
+            color='silver'))
+ax1.patches[9].set_color('blue')
+ax1.patches[8].set_color('green')
+ax1.patches[7].set_color('red')
+
+
+
+
+
+
+
 
 
 #plots tenure
