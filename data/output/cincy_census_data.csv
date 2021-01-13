@@ -1,0 +1,78 @@
+NAME,report_variable,population,race_code,var_code,race,description,gender,age_group,in_labor_force
+"Cincinnati, OH-KY-IN Metro Area",C23002B_001E,199776,B,1,Black or African American Alone,total_estimate,total,all,all
+"Cincinnati, OH-KY-IN Metro Area",C23002G_027E,837,G,27,Two or More Races,female_not_in_labor_force_over_65,female,over 65,no
+"Cincinnati, OH-KY-IN Metro Area",C23002G_024E,131,G,24,Two or More Races,female_in_labor_force_over_65,female,over 65,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002G_022E,3677,G,22,Two or More Races,female_not_in_labor_force_16_64,female,16 to 64,no
+"Cincinnati, OH-KY-IN Metro Area",C23002G_017E,9075,G,17,Two or More Races,female_in_labor_force_16_64,female,16 to 64,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002G_015E,13720,G,15,Two or More Races,female_total_estimate,female,all,all
+"Cincinnati, OH-KY-IN Metro Area",C23002G_014E,693,G,14,Two or More Races,male_not_in_labor_force_over_65,male,over 65,no
+"Cincinnati, OH-KY-IN Metro Area",C23002G_011E,206,G,11,Two or More Races,male_in_labor_force_over_65,male,over 65,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002G_009E,3026,G,9,Two or More Races,male_not_in_labor_force_16_64,male,16 to 64,no
+"Cincinnati, OH-KY-IN Metro Area",C23002G_004E,8534,G,4,Two or More Races,male_in_labor_force_16_64,male,16 to 64,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002G_002E,12459,G,2,Two or More Races,male_total_estimate,male,all,all
+"Cincinnati, OH-KY-IN Metro Area",C23002G_001E,26179,G,1,Two or More Races,total_estimate,total,all,all
+"Cincinnati, OH-KY-IN Metro Area",C23002E_027E,2,E,27,Native Hawaiian and Other Pacific Islander Alone,female_not_in_labor_force_over_65,female,over 65,no
+"Cincinnati, OH-KY-IN Metro Area",C23002E_024E,32,E,24,Native Hawaiian and Other Pacific Islander Alone,female_in_labor_force_over_65,female,over 65,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002E_022E,114,E,22,Native Hawaiian and Other Pacific Islander Alone,female_not_in_labor_force_16_64,female,16 to 64,no
+"Cincinnati, OH-KY-IN Metro Area",C23002E_017E,152,E,17,Native Hawaiian and Other Pacific Islander Alone,female_in_labor_force_16_64,female,16 to 64,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002H_001E,1398738,H,1,"White Alone, Not Hispanic or Latino",total_estimate,total,all,all
+"Cincinnati, OH-KY-IN Metro Area",C23002H_002E,681024,H,2,"White Alone, Not Hispanic or Latino",male_total_estimate,male,all,all
+"Cincinnati, OH-KY-IN Metro Area",C23002H_004E,455731,H,4,"White Alone, Not Hispanic or Latino",male_in_labor_force_16_64,male,16 to 64,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002H_009E,103644,H,9,"White Alone, Not Hispanic or Latino",male_not_in_labor_force_16_64,male,16 to 64,no
+"Cincinnati, OH-KY-IN Metro Area",C23002I_022E,6305,I,22,Hispanic or Latino,female_not_in_labor_force_16_64,female,16 to 64,no
+"Cincinnati, OH-KY-IN Metro Area",C23002I_017E,12645,I,17,Hispanic or Latino,female_in_labor_force_16_64,female,16 to 64,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002I_015E,20448,I,15,Hispanic or Latino,female_total_estimate,female,all,all
+"Cincinnati, OH-KY-IN Metro Area",C23002I_014E,693,I,14,Hispanic or Latino,male_not_in_labor_force_over_65,male,over 65,no
+"Cincinnati, OH-KY-IN Metro Area",C23002I_011E,393,I,11,Hispanic or Latino,male_in_labor_force_over_65,male,over 65,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002I_009E,3932,I,9,Hispanic or Latino,male_not_in_labor_force_16_64,male,16 to 64,no
+"Cincinnati, OH-KY-IN Metro Area",C23002I_004E,17555,I,4,Hispanic or Latino,male_in_labor_force_16_64,male,16 to 64,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002E_015E,300,E,15,Native Hawaiian and Other Pacific Islander Alone,female_total_estimate,female,all,all
+"Cincinnati, OH-KY-IN Metro Area",C23002I_002E,22573,I,2,Hispanic or Latino,male_total_estimate,male,all,all
+"Cincinnati, OH-KY-IN Metro Area",C23002H_027E,130711,H,27,"White Alone, Not Hispanic or Latino",female_not_in_labor_force_over_65,female,over 65,no
+"Cincinnati, OH-KY-IN Metro Area",C23002H_024E,23425,H,24,"White Alone, Not Hispanic or Latino",female_in_labor_force_over_65,female,over 65,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002H_022E,150642,H,22,"White Alone, Not Hispanic or Latino",female_not_in_labor_force_16_64,female,16 to 64,no
+"Cincinnati, OH-KY-IN Metro Area",C23002H_017E,412936,H,17,"White Alone, Not Hispanic or Latino",female_in_labor_force_16_64,female,16 to 64,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002H_015E,717714,H,15,"White Alone, Not Hispanic or Latino",female_total_estimate,female,all,all
+"Cincinnati, OH-KY-IN Metro Area",C23002H_014E,92624,H,14,"White Alone, Not Hispanic or Latino",male_not_in_labor_force_over_65,male,over 65,no
+"Cincinnati, OH-KY-IN Metro Area",C23002H_011E,29025,H,11,"White Alone, Not Hispanic or Latino",male_in_labor_force_over_65,male,over 65,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002I_001E,43021,I,1,Hispanic or Latino,total_estimate,total,all,all
+"Cincinnati, OH-KY-IN Metro Area",C23002I_024E,225,I,24,Hispanic or Latino,female_in_labor_force_over_65,female,over 65,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002E_014E,24,E,14,Native Hawaiian and Other Pacific Islander Alone,male_not_in_labor_force_over_65,male,over 65,no
+"Cincinnati, OH-KY-IN Metro Area",C23002E_009E,20,E,9,Native Hawaiian and Other Pacific Islander Alone,male_not_in_labor_force_16_64,male,16 to 64,no
+"Cincinnati, OH-KY-IN Metro Area",C23002C_011E,21,C,11,American Indian and Alaska Native Alone,male_in_labor_force_over_65,male,over 65,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002C_009E,426,C,9,American Indian and Alaska Native Alone,male_not_in_labor_force_16_64,male,16 to 64,no
+"Cincinnati, OH-KY-IN Metro Area",C23002C_004E,758,C,4,American Indian and Alaska Native Alone,male_in_labor_force_16_64,male,16 to 64,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002C_002E,1351,C,2,American Indian and Alaska Native Alone,male_total_estimate,male,all,all
+"Cincinnati, OH-KY-IN Metro Area",C23002C_001E,2455,C,1,American Indian and Alaska Native Alone,total_estimate,total,all,all
+"Cincinnati, OH-KY-IN Metro Area",C23002B_027E,14095,B,27,Black or African American Alone,female_not_in_labor_force_over_65,female,over 65,no
+"Cincinnati, OH-KY-IN Metro Area",C23002B_024E,2835,B,24,Black or African American Alone,female_in_labor_force_over_65,female,over 65,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002B_022E,23337,B,22,Black or African American Alone,female_not_in_labor_force_16_64,female,16 to 64,no
+"Cincinnati, OH-KY-IN Metro Area",C23002B_017E,66909,B,17,Black or African American Alone,female_in_labor_force_16_64,female,16 to 64,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002B_015E,107176,B,15,Black or African American Alone,female_total_estimate,female,all,all
+"Cincinnati, OH-KY-IN Metro Area",C23002B_014E,8532,B,14,Black or African American Alone,male_not_in_labor_force_over_65,male,over 65,no
+"Cincinnati, OH-KY-IN Metro Area",C23002B_011E,2413,B,11,Black or African American Alone,male_in_labor_force_over_65,male,over 65,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002B_009E,23992,B,9,Black or African American Alone,male_not_in_labor_force_16_64,male,16 to 64,no
+"Cincinnati, OH-KY-IN Metro Area",C23002B_004E,57663,B,4,Black or African American Alone,male_in_labor_force_16_64,male,16 to 64,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002B_002E,92600,B,2,Black or African American Alone,male_total_estimate,male,all,all
+"Cincinnati, OH-KY-IN Metro Area",C23002C_014E,146,C,14,American Indian and Alaska Native Alone,male_not_in_labor_force_over_65,male,over 65,no
+"Cincinnati, OH-KY-IN Metro Area",C23002C_015E,1104,C,15,American Indian and Alaska Native Alone,female_total_estimate,female,all,all
+"Cincinnati, OH-KY-IN Metro Area",C23002C_017E,673,C,17,American Indian and Alaska Native Alone,female_in_labor_force_16_64,female,16 to 64,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002C_022E,313,C,22,American Indian and Alaska Native Alone,female_not_in_labor_force_16_64,female,16 to 64,no
+"Cincinnati, OH-KY-IN Metro Area",C23002E_004E,416,E,4,Native Hawaiian and Other Pacific Islander Alone,male_in_labor_force_16_64,male,16 to 64,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002E_002E,465,E,2,Native Hawaiian and Other Pacific Islander Alone,male_total_estimate,male,all,all
+"Cincinnati, OH-KY-IN Metro Area",C23002E_001E,765,E,1,Native Hawaiian and Other Pacific Islander Alone,total_estimate,total,all,all
+"Cincinnati, OH-KY-IN Metro Area",C23002D_027E,2083,D,27,Asian Alone,female_not_in_labor_force_over_65,female,over 65,no
+"Cincinnati, OH-KY-IN Metro Area",C23002D_024E,350,D,24,Asian Alone,female_in_labor_force_over_65,female,over 65,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002D_022E,7816,D,22,Asian Alone,female_not_in_labor_force_16_64,female,16 to 64,no
+"Cincinnati, OH-KY-IN Metro Area",C23002D_017E,11954,D,17,Asian Alone,female_in_labor_force_16_64,female,16 to 64,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002E_011E,5,E,11,Native Hawaiian and Other Pacific Islander Alone,male_in_labor_force_over_65,male,over 65,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002D_015E,22203,D,15,Asian Alone,female_total_estimate,female,all,all
+"Cincinnati, OH-KY-IN Metro Area",C23002D_011E,548,D,11,Asian Alone,male_in_labor_force_over_65,male,over 65,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002D_009E,3281,D,9,Asian Alone,male_not_in_labor_force_16_64,male,16 to 64,no
+"Cincinnati, OH-KY-IN Metro Area",C23002D_004E,15229,D,4,Asian Alone,male_in_labor_force_16_64,male,16 to 64,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002D_002E,20287,D,2,Asian Alone,male_total_estimate,male,all,all
+"Cincinnati, OH-KY-IN Metro Area",C23002D_001E,42490,D,1,Asian Alone,total_estimate,total,all,all
+"Cincinnati, OH-KY-IN Metro Area",C23002C_027E,104,C,27,American Indian and Alaska Native Alone,female_not_in_labor_force_over_65,female,over 65,no
+"Cincinnati, OH-KY-IN Metro Area",C23002C_024E,14,C,24,American Indian and Alaska Native Alone,female_in_labor_force_over_65,female,over 65,yes
+"Cincinnati, OH-KY-IN Metro Area",C23002D_014E,1229,D,14,Asian Alone,male_not_in_labor_force_over_65,male,over 65,no
+"Cincinnati, OH-KY-IN Metro Area",C23002I_027E,1273,I,27,Hispanic or Latino,female_not_in_labor_force_over_65,female,over 65,no
