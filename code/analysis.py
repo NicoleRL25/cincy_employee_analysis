@@ -23,6 +23,8 @@ def run_analysis():
                                      data['full_time'],data['age_groups'],
                                      data['race'],data['gender'])
         
+        plots.plot_protective_services_gender(data['pro_vs_gen_gender_pct'])
+        
         plots.plot_job_class_gender(data['jobs_by_gender_pct'])
         
         plots.plot_leader_gender(data['leaders_by_gender_pct'])

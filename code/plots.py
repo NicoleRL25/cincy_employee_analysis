@@ -115,6 +115,32 @@ def plot_employee_snapshot(emps,emps_by_jobclass, emps_ft_pt, emp_ages,
     
     fig.savefig('..\images\output\employee_snapshot.png')
     
+    
+def plot_protective_services_gender(protective_services_gender):
+    
+    protective_services_gender=protective_services_gender.copy()
+    
+    fig,ax=plt.subplots()
+    
+    protective_services_gender.plot.bar(stacked=True,rot=0,
+                                          ax=ax,
+                                          title='Gender of Protective Service '
+                                          'Workers \nvs. General Workforce')
+    
+    protective_services_gender['Female'].plot(linestyle='--',
+                                                color='gray', ax=ax,
+                                                label='')
+    
+    
+    ax.legend(bbox_to_anchor=(1,1))
+    ax.yaxis.set_major_formatter(mtick.PercentFormatter(1))
+        
+    
+    fig.savefig('..\images\output\protective_services_vs_general_gender.png',
+                bbox_inches = "tight")
+    
+    
+    
 def plot_job_class_gender(job_class_by_gender_pct):
     """
     

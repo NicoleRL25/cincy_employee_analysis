@@ -125,6 +125,18 @@ def get_data_for_plots(emps):
     
     else:
         
+        #Creates list of eeo job classes
+        eeo_job_classes=list(emps.eeo_job_class.unique())
+        
+        #Copies list of eeo job classes and removes officials
+        emps_non_officials=eeo_job_classes.copy()
+        emps_non_officials.remove('Officials and Administrators')
+        
+        
+        #Copies list of eeo job classes and removes protective service workers
+        emps_non_protective=eeo_job_classes.copy()
+        emps_non_protective.remove('Protective Service Workers')
+        
         #counts of full-time and part time employees
         emps_ft_pt=emps.full_time.value_counts(normalize=True)
         data_dict['full_time']=emps_ft_pt
@@ -141,6 +153,7 @@ def get_data_for_plots(emps):
         emps_gender=emps.sex.value_counts(normalize=True)
         data_dict['gender']=emps_gender
         
+                
         #percent of employees by job class
         emps_by_jobclass=(emps.eeo_job_class.value_counts(normalize=True)
                           .sort_values())
@@ -156,15 +169,11 @@ def get_data_for_plots(emps):
         job_class_by_gender_pct=job_class_by_gender.div(job_class_by_gender
                                                         .sum(axis=1), axis=0)
         data_dict['jobs_by_gender_pct']=job_class_by_gender_pct
+    
+              
         
         #gets the total of employees in non-leadership roles
-        emps_non_official=(job_class_by_gender.loc[['Administrative Support',
-                                                    'Professionals',
-                                                    'Protective Service Workers',
-                                                    'Service-Maintenance',
-                                                    'Skilled Craft Workers',
-                                                    'Technicians',
-                                                    'Uncategorized']].copy()
+        emps_non_official=(job_class_by_gender.loc[emps_non_officials].copy()
                            .sum())
         
         emps_officials=(job_class_by_gender.loc['Officials and Administrators']
@@ -187,7 +196,31 @@ def get_data_for_plots(emps):
                                   .rename(columns={'level_0':'Org Level',
                                                          0:'Percent'}))
         data_dict['leaders_by_gender_pct']=leadership_by_gender_pct
+        
+        
+        
+        emps_non_protective_df=job_class_by_gender.loc[emps_non_protective]
+        emps_protective_df=job_class_by_gender.loc['Protective Service Workers']
 
+        protective_vs_general=(pd.concat([emps_protective_df,
+                                     emps_non_protective_df.sum()],
+                                     axis=1)
+                       .rename(columns=({0:'General Workforce'})))
+        
+        data_dict['pro_vs_general_gender']=protective_vs_general.T
+        
+        protective_vs_general_gender_pct=(protective_vs_general
+                                      .div(protective_vs_general.sum(),axis=1))
+        
+        data_dict['pro_vs_gen_gender_pct']=protective_vs_general_gender_pct.T
+        
+        gender_police_fire=(emps.pivot_table(index='paygroup_label',
+                                            columns='sex',values='name',
+                                            aggfunc='count')
+                            .loc[['Fire Department','Police']])
+        
+        data_dict['gender_police_fire']=gender_police_fire
+        
         
         #count of employees in each job class segmented by race
         job_class_by_race=emps.pivot_table(index='eeo_job_class',
