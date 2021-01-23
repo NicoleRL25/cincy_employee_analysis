@@ -191,10 +191,8 @@ def get_data_for_plots(emps):
         #percent of employees in leadership and non-leadership roles
         #segmented by gender
         leadership_by_gender_pct=(leadership_by_gender
-                                  .div(leadership_by_gender.sum()).unstack()
-                                  .reset_index()
-                                  .rename(columns={'level_0':'Org Level',
-                                                         0:'Percent'}))
+                                  .div(leadership_by_gender.sum()))
+
         data_dict['leaders_by_gender_pct']=leadership_by_gender_pct
         
         

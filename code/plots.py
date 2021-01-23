@@ -9,7 +9,6 @@ Created on Tue Nov 10 19:49:06 2020
 import matplotlib.pyplot as plt
 from matplotlib import ticker as mtick
 from matplotlib.gridspec import GridSpec
-import seaborn as sns
 
 
 def plot_employee_snapshot(emps,emps_by_jobclass, emps_ft_pt, emp_ages,
@@ -49,7 +48,7 @@ def plot_employee_snapshot(emps,emps_by_jobclass, emps_ft_pt, emp_ages,
     ax6=fig.add_subplot(gs[1,1])
     
     
-    #text plot displaying total employee count
+    #ax displaying logo
     
     image=plt.imread('..\images\input\cincinnati_logo.png')
     ax1.imshow(image)
@@ -105,22 +104,58 @@ def plot_employee_snapshot(emps,emps_by_jobclass, emps_ft_pt, emp_ages,
     ax5.set_yticklabels(wrapped_labels)
     
     
-    
-    
-    emps_gender.plot.pie(ax=ax6,title='Employee Gender', autopct='%1.0f%%',
-                         rot=0, wedgeprops={'width':.3}, pctdistance=.4)
-    ax6.yaxis.set_major_formatter(mtick.PercentFormatter(1))
-    ax6.set_ylabel(None)
+    plot_employee_gender(emps_gender,ax6)
     
     
     fig.savefig('..\images\output\employee_snapshot.png')
     
     
-def plot_protective_services_gender(protective_services_gender):
+    
+def plot_gender_snapshot(job_class_by_gender_pct, emps_gender):
+    
+    
+    
+    fig=plt.figure(figsize=(14,8),constrained_layout=True)
+    
+    gs=GridSpec(3, 3, figure=fig)
+    
+    ax1=fig.add_subplot(gs[0,0])
+    #ax2=fig.add_subplot(gs[1:,0])
+    ax3=fig.add_subplot(gs[0:,1:])
+    
+    
+    
+    #plot of logo
+    image=plt.imread('..\images\input\cincinnati_logo.png')
+    ax1.imshow(image)
+    
+    #removes spines from headcount axis
+    for spine in ax1.spines.keys():
+        ax1.spines[spine].set_visible(False)
+        
+    
+    ax1.set_xticks([])
+    ax1.set_yticks([])
+    
+    #plot of job class by gender
+    plot_job_class_gender(job_class_by_gender_pct, ax=ax3)
+    
+   # plot_employee_gender(emps_gender,ax=ax2)
+    
+    
+    
+    
+    
+def plot_protective_services_gender(protective_services_gender,
+                                    ax=None,save_fig=False):
     
     protective_services_gender=protective_services_gender.copy()
     
-    fig,ax=plt.subplots()
+    fig=plt.figure()
+    
+    if ax==None:
+        ax=fig.add_subplot()
+    
     
     protective_services_gender.plot.bar(stacked=True,rot=0,
                                           ax=ax,
@@ -136,12 +171,27 @@ def plot_protective_services_gender(protective_services_gender):
     ax.yaxis.set_major_formatter(mtick.PercentFormatter(1))
         
     
-    fig.savefig('..\images\output\protective_services_vs_general_gender.png',
-                bbox_inches = "tight")
+    if save_fig:
+        fig.savefig('..\images\output\protective_services_vs_general_gender.png',
+                    bbox_inches = "tight")
+        
+        
+def plot_employee_gender(emps_gender,ax=None,save_fig=False):
     
+    fig=plt.figure()
     
+    if ax==None:
+        ax=fig.add_subplot()
     
-def plot_job_class_gender(job_class_by_gender_pct):
+    emps_gender.plot.pie(ax=ax,title='Employee Gender', autopct='%1.0f%%',
+                         rot=0, wedgeprops={'width':.3}, pctdistance=.4)
+    ax.yaxis.set_major_formatter(mtick.PercentFormatter(1))
+    ax.set_ylabel(None)
+        
+    if save_fig:
+        fig.savefig('..\images\output\gender_ratio.png')
+    
+def plot_job_class_gender(job_class_by_gender_pct, ax=None,save_fig=False):
     """
     
 
@@ -156,19 +206,25 @@ def plot_job_class_gender(job_class_by_gender_pct):
 
     """
 
-   
-    fig,ax=plt.subplots(figsize=(9,7))
+    fig=plt.figure(figsize=(9,7))
+    
+    if ax==None:
+        ax=fig.add_subplot()
+    
     job_class_by_gender_pct.plot.barh(stacked=True,cmap='tab20c',ax=ax
                                       ,title='Employees Segmented by '
                                       'EEO Job Category and Gender')
     ax.xaxis.set_major_formatter(mtick.PercentFormatter(1))
     ax.legend(bbox_to_anchor=(1.1,1))
     ax.axvline(x=.5, color='red')
+    ax.set_ylabel('EEO Job Category')
     
-    fig.savefig('..\images\output\employee_job_cat_gender.png')
+    if save_fig:
+        fig.savefig('..\images\output\employee_job_cat_gender.png',
+                    bbox_inches='tight')
     
 
-def plot_leader_gender(leadership_by_gender_pct):
+def plot_leader_gender(leadership_by_gender_pct,ax = None,save_fig=False):
     """
     
 
@@ -182,43 +238,62 @@ def plot_leader_gender(leadership_by_gender_pct):
     None.
 
     """
-
-    fig,ax=plt.subplots()
-    sns.pointplot(x='Org Level',y='Percent',hue='sex',
-                  data=leadership_by_gender_pct,ax=ax,
-                  palette=sns.color_palette(['tab:orange','tab:blue']))
+    
+    fig=plt.figure()
+    
+    if ax==None:
+        ax=fig.add_subplot()
+    
+    leadership_by_gender_pct.loc[:,'Leadership'].plot.bar(ax=ax,
+                                                          rot=0)                                                          
         
-    ax.set_title('Leadership Representation: Gender')       
+    ax.set_xlabel('Gender')
+    
+    ax.set_title('Leadership Representation')       
     
     ax.yaxis.set_major_formatter(mtick.PercentFormatter(1))  
+    ax.patches[0].set_color('darkorange')
+    ax.patches[1].set_color('gray')
 
-    fig.savefig('..\images\output\leader_gender.png')
+    if save_fig:
+        fig.savefig('..\images\output\leader_gender.png')
     
     
-def plot_job_class_race(job_class_by_race_pct):
+    
+    
+def plot_job_class_race(job_class_by_race_pct,ax = None,save_fig=False):
 
     
-    fig,ax=plt.subplots(figsize=(9,7))
+    fig=plt.figure(figsize=(9,7))
+    
+    if ax==None:
+        ax=fig.add_subplot()
+        
     job_class_by_race_pct.plot.barh(stacked=True,cmap='tab20c',ax=ax
                                       ,title='Employees Segmented by '
                                       'EEO Job Category and Race')
     ax.xaxis.set_major_formatter(mtick.PercentFormatter(1))
     ax.legend(bbox_to_anchor=(1.1,1))
     
-    fig.savefig('..\images\output\job_class_race.png')
+    
+    if save_fig:
+        fig.savefig('..\images\output\job_class_race.png')
 
 
-def plot_top_job_titles(top_job_titles):
+def plot_top_job_titles(top_job_titles, ax=None, save_fig=False):
     
+    fig=plt.figure()
     
-    fig,ax=plt.subplots()
+    if ax==None:
+        ax=fig.add_subplot()
+    
     (top_job_titles.plot.barh(ax=ax,title='Top 10 Job Titles', 
                               color='silver'))
     ax.patches[9].set_color('blue')
     ax.patches[8].set_color('green')
     ax.patches[7].set_color('red')
     
-    
-    fig.savefig('..\images\output\job_titles.png')
+    if save_fig:
+        fig.savefig('..\images\output\job_titles.png')
     
         
