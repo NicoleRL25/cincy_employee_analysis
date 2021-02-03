@@ -13,6 +13,7 @@ def run_analysis():
     
 
     emps=dc.get_cleaned_emp_list()
+
     
     if not emps.empty:
         
@@ -25,13 +26,22 @@ def run_analysis():
         
         plots.plot_protective_services_gender(data['pro_vs_gen_gender_pct'])
         
-        plots.plot_job_class_gender(data['jobs_by_gender_pct'],save_fig=True)
+        plots.plot_job_class_gender(data['jobs_by_gender_pct'])
         
         plots.plot_leader_gender(data['leaders_by_gender_pct'])
         
-        plots.plot_job_class_race(data['job_class_race_pct'])
+               
         
         plots.plot_top_job_titles(data['top_jobs'])
+        
+        plots.plot_racial_composition(data['race'])
+        
+        plots.plot_observed_vs_expected(data['chi_square'],save_fig=True)
+
+
+
+
+
 
 
 

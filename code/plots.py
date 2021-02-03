@@ -25,6 +25,13 @@ def plot_employee_snapshot(emps,emps_by_jobclass, emps_ft_pt, emp_ages,
     
     """
     
+    emps=emps.copy()
+    emps_by_jobclass=emps_by_jobclass.copy()
+    emps_ft_pt=emps_ft_pt.copy()
+    emp_ages=emp_ages.copy()
+    emps_race=emps_race.copy()
+    emps_gender=emps_gender.copy()
+    
     fig = plt.figure(figsize=(11,8),constrained_layout=True)
     fig.suptitle('City of Cincinnati Employee Snapshot')
     gs=GridSpec(3,3,figure=fig)
@@ -272,12 +279,14 @@ def plot_job_class_race(job_class_by_race_pct,ax = None,save_fig=False):
     job_class_by_race_pct.plot.barh(stacked=True,cmap='tab20c',ax=ax
                                       ,title='Employees Segmented by '
                                       'EEO Job Category and Race')
+    ax.axvline(.48,color='red')
     ax.xaxis.set_major_formatter(mtick.PercentFormatter(1))
     ax.legend(bbox_to_anchor=(1.1,1))
     
     
     if save_fig:
-        fig.savefig('..\images\output\job_class_race.png')
+        fig.savefig('..\images\output\job_class_race.png',
+                    bbox_inches='tight')
 
 
 def plot_top_job_titles(top_job_titles, ax=None, save_fig=False):
@@ -295,5 +304,45 @@ def plot_top_job_titles(top_job_titles, ax=None, save_fig=False):
     
     if save_fig:
         fig.savefig('..\images\output\job_titles.png')
+        
+        
+def plot_racial_composition(race_counts,ax=None,save_fig=False):
+    
+    fig=plt.figure()
+    
+    if ax==None:
+        ax=fig.add_subplot()
+    
+    percents=race_counts.div(race_counts.sum())
+    percent_labels=['{:.2%}'.format(p) for p in percents]
+
+    percents.plot.pie(radius=1,wedgeprops={'width':.3},
+                      labels=percents.index + ': ' + percent_labels,
+                      labeldistance=None,
+                      cmap='Blues',ax=ax)
+    
+    ax.legend(bbox_to_anchor=(1,.75))    
+    ax.set_title('Racial and Ethnic Composition of '
+                 'Cincinnati\'s Municipal Workforce')
+    ax.set_ylabel('Race')
+    
+    if save_fig:
+        fig.savefig('..\images\output\emp_racial_composition.png',
+                    bbox_inches='tight')
+        
+def plot_observed_vs_expected(df,ax=None,save_fig=False):
     
         
+    fig=plt.figure()
+    
+    if ax==None:
+        ax=fig.add_subplot()
+        
+    df.plot.bar(ax=ax,title='Observed vs Expected',rot=0)
+    
+    ax.legend(['Observed','Expected'])    
+    ax.set_ylabel('Race')
+
+    if save_fig:
+        fig.savefig('..\images\output\observed_vs_expected.png',
+                    bbox_inches='tight')

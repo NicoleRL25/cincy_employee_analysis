@@ -14,7 +14,7 @@ from datetime import datetime
 
 
 
-def clean_emp_list():
+def clean_emp_list(file_name=None):
     """
     Reads the cincinnati employee csv file and outputs a clean file
 
@@ -23,14 +23,17 @@ def clean_emp_list():
     None.
 
     """
-
+    if file_name==None:
+        file_name='..\data\input\cincinnati_employees.csv'
+        
     today=datetime.today()
+
 
     try:
         
         #read csv containing cincinnati employee data into a pandas dataframe
-        emps=pd.read_csv('..\data\input\cincinnati_employees.csv'
-                         ,dtype={'SEX':'category' ,'RACE':'category',
+        emps=pd.read_csv(file_name,
+                         dtype={'SEX':'category' ,'RACE':'category',
                                  'DEPTNAME':'category','DEPTID':'str',
                                  'POSITION_NBR':'str','JOBCODE':'str',
                                  'GRADE':'str'},
@@ -93,6 +96,8 @@ def clean_emp_list():
         emps['annual_rt']=emps.annual_rt.str.replace(',','')
         emps['annual_rt']=emps.annual_rt.astype('float')
         
+
+                       
         
         return emps
         
@@ -109,6 +114,7 @@ def save_emp_list(emps):
     try:
         
         emps.to_csv('..\data\output\cleaned_cincy_emp_list.csv',index=False)
+
     
     except Exception as e:
         print(e)
@@ -117,6 +123,8 @@ def save_emp_list(emps):
 def get_data_for_plots(emps):
     
     data_dict={}
+    race_categories=['White','Black','Asian/Pacific Islander', 'Hispanic',
+                 'American Indian/Alaskan Native']
     
     emps=emps.copy()
     
@@ -124,6 +132,10 @@ def get_data_for_plots(emps):
         pass
     
     else:
+        
+        race_df=emps.loc[emps.race.isin(race_categories)].copy()
+        
+        data_dict['race_df']=race_df
         
         #Creates list of eeo job classes
         eeo_job_classes=list(emps.eeo_job_class.unique())
@@ -244,12 +256,28 @@ def get_data_for_plots(emps):
         
         data_dict['top_jobs']=top_job_titles
         
+        data_dict['cincy_race_demos']=get_cincinnati_racial_demographics()
+        
+        expected_counts=(round(data_dict['cincy_race_demos']['expected']
+                               *data_dict['race_df'].race.value_counts()
+                               .sum(),0))
+        
+        
+        observed_counts=data_dict['race_df'].race.value_counts()
+        
+        
+        
+        data_dict['chi_square']=pd.concat([observed_counts,
+                                           expected_counts],axis=1)
+        
+                
+        
     return data_dict
         
         
         
         
-def get_cleaned_emp_list():
+def get_cleaned_emp_list(file_name=None):
     """
     Reads the cleaned Cincinnati employee list into a Pandas dataframe
 
@@ -259,6 +287,8 @@ def get_cleaned_emp_list():
         Pandas dataframe of Cincinnati employees.
 
     """
+    if file_name==None:
+        file_name='..\data\output\cleaned_cincy_emp_list.csv'
     
     try:
         
@@ -269,7 +299,7 @@ def get_cleaned_emp_list():
                                     ,ordered=True)
         
         
-        emps=pd.read_csv('..\data\output\cleaned_cincy_emp_list.csv')
+        emps=pd.read_csv(file_name)
         
         
         #casts the age_range as a categorical data type
@@ -279,6 +309,29 @@ def get_cleaned_emp_list():
         print(e)
     else:
         return emps
-
+    
+    
+    
+def get_cincinnati_racial_demographics():
+    
+    
+    
+    cincy_pop_estimate=303940
+    cincy_race_distribution={'White':0.482,'Black':0.423,
+                             'Asian/Pacific Islander':0.023,
+                             'Hispanic':0.038,
+                             'American Indian/Alaskan Native':.001}
+    
+    df=(pd.DataFrame.from_dict(list(cincy_race_distribution.items()))
+        .rename(columns={0:'race',1:'percent'}))
+    
+    df.set_index('race',inplace=True)
+    
+    df['count']=round(df['percent']*cincy_pop_estimate,0)
+    
+    df['expected']=df['count'].div(df['count'].sum())
+    
+    
+    return df
 
     
