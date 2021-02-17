@@ -333,16 +333,55 @@ def plot_racial_composition(race_counts,ax=None,save_fig=False):
 def plot_observed_vs_expected(df,ax=None,save_fig=False):
     
         
-    fig=plt.figure()
+    fig=plt.figure(figsize=(10,6))
     
     if ax==None:
         ax=fig.add_subplot()
         
-    df.plot.bar(ax=ax,title='Observed vs Expected',rot=0)
+    df.plot.barh(ax=ax,title='Observed vs Expected',rot=0)
     
-    ax.legend(['Observed','Expected'])    
+    ax.legend(['Observed','Expected'],
+              bbox_to_anchor=(1,1))    
     ax.set_ylabel('Race')
+    
+    annotate_plot(ax.patches, ax)
 
     if save_fig:
         fig.savefig('..\images\output\observed_vs_expected.png',
                     bbox_inches='tight')
+        
+        
+def annotate_plot(rects, ax,offset_text=True, horizontal=True):
+    for p in rects:
+        """
+        offset_text: 
+            True positions text at the end of the bar for the centered 
+            stacked bar chart; False centers text
+
+        horizontal:
+            True indicates a horizontal bar chart; False is vertical
+
+        """
+
+        width=p.get_width() 
+        height=p.get_height() 
+        x=p.get_xy()[0] #gets the x coordinate of the bar
+        y=p.get_xy()[1] #gets the y coordinate of the bar
+
+        #if the text should be offset and not centered
+        #variable sets the offset so it's negative if the width value is negative
+        offset=0 if not offset_text else 15 if width >0 else -10 
+        
+        #sets the x-location to be centered if not offset
+        x_loc=x+width/2 if not offset_text else x+width
+
+        #converts width and height to string values
+        horizontal_text='' if width ==0 else str(abs(int(width)))
+        vertical_text ='' if height == 0 else str(abs(int(height)))
+        
+        text = horizontal_text if horizontal else vertical_text        
+        
+        ax.annotate(text,xy=(x_loc,y+height/2), 
+                     xytext=(offset,0),
+                    textcoords='offset points',
+                    ha='center',va='center')

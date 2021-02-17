@@ -36,7 +36,7 @@ def run_analysis():
         
         plots.plot_racial_composition(data['race'])
         
-        plots.plot_observed_vs_expected(data['chi_square'],save_fig=True)
+        plots.plot_observed_vs_expected(data['chi_square'])
 
 
 

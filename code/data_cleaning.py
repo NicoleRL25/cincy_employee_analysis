@@ -263,12 +263,26 @@ def get_data_for_plots(emps):
                                .sum(),0))
         
         
-        observed_counts=data_dict['race_df'].race.value_counts()
+        observed_counts=(data_dict['race_df'].race.value_counts()
+                         .rename("observed"))
         
         
         
-        data_dict['chi_square']=pd.concat([observed_counts,
+        data_dict['chi_square']=(pd.concat([observed_counts,
                                            expected_counts],axis=1)
+                                 .sort_values(by='expected'))
+        
+        data_dict['chi_square']['std_residual']=(data_dict['chi_square']
+                                             .apply(lambda x: (x.observed
+                                                               -x.expected)
+                                                    /np.sqrt(x.expected),
+                                                    axis=1))
+        
+        data_dict['chi_square']['r_squared']=(data_dict['chi_square']
+                                                 .apply(lambda x: 
+                                                        ((x.observed
+                                                          -x.expected)**2)
+                                                        /x.expected,axis=1))
         
                 
         
