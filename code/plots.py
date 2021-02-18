@@ -279,7 +279,7 @@ def plot_job_class_race(job_class_by_race_pct,ax = None,save_fig=False):
     job_class_by_race_pct.plot.barh(stacked=True,cmap='tab20c',ax=ax
                                       ,title='Employees Segmented by '
                                       'EEO Job Category and Race')
-    ax.axvline(.48,color='red')
+    ax.axvline(.59,color='red')
     ax.xaxis.set_major_formatter(mtick.PercentFormatter(1))
     ax.legend(bbox_to_anchor=(1.1,1))
     
@@ -310,6 +310,10 @@ def plot_racial_composition(race_counts,ax=None,save_fig=False):
     
     fig=plt.figure()
     
+    #gets the Blues color map and reverses it so largest value is darkest
+    color_map = plt.cm.get_cmap('Blues')
+    reversed_color_map = color_map.reversed()
+    
     if ax==None:
         ax=fig.add_subplot()
     
@@ -319,7 +323,7 @@ def plot_racial_composition(race_counts,ax=None,save_fig=False):
     percents.plot.pie(radius=1,wedgeprops={'width':.3},
                       labels=percents.index + ': ' + percent_labels,
                       labeldistance=None,
-                      cmap='Blues',ax=ax)
+                      cmap=reversed_color_map,ax=ax)
     
     ax.legend(bbox_to_anchor=(1,.75))    
     ax.set_title('Racial and Ethnic Composition of '
@@ -332,6 +336,7 @@ def plot_racial_composition(race_counts,ax=None,save_fig=False):
         
 def plot_observed_vs_expected(df,ax=None,save_fig=False):
     
+    df=df[['observed','expected']].copy()
         
     fig=plt.figure(figsize=(10,6))
     

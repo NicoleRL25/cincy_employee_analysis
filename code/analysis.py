@@ -38,6 +38,7 @@ def run_analysis():
         
         plots.plot_observed_vs_expected(data['chi_square'])
 
+        plots.plot_job_class_race(data['job_class_race_pct'],save_fig=True)
 
 
 

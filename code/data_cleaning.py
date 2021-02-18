@@ -135,6 +135,7 @@ def get_data_for_plots(emps):
         
         race_df=emps.loc[emps.race.isin(race_categories)].copy()
         
+        
         data_dict['race_df']=race_df
         
         #Creates list of eeo job classes
@@ -158,7 +159,9 @@ def get_data_for_plots(emps):
         data_dict['age_groups']=emp_ages
         
         #counts by race
-        emps_race=emps.race.value_counts().sort_values()
+        emps_race=emps.race.value_counts()
+        emps_race.sort_values(ascending=False,inplace=True)
+        
         data_dict['race']=emps_race
         
         #percent of employees by gender
