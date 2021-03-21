@@ -11,7 +11,7 @@ women in Protective Service Worker categories are present at rates equal to or g
 women are in senior level Official positions at the same rate as men
 
 I also took interest in the [racial demographics of Cincinnati's municipal workforce](https://github.com/NicoleRL25/cincy_employee_analysis/blob/main/code/racial_demographics_cincinnati_municipal_workforce.ipynb).  Like many cities, Cincinnati has become more racially and ethnically diverse in recent years. I perform chi-square testing to decide if:
-the racial composition of the workforce is a reflection of the community at large
+the racial composition of the workforce is a reflection of the community at large and if
 there is an association between someone’s race and the type of job that they hold.
 
 ### Limitations
